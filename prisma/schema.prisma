@@ -1,0 +1,447 @@
+// This is your Prisma schema file with optimizations for performance and scalability
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // Changed to PostgreSQL for better scalability
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String         @id @default(uuid())
+  email             String         @unique
+  name              String
+  password          String
+  refreshToken      String?
+  isActive          Boolean        @default(true)
+  lastLoginAt       DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  deletedAt         DateTime?      // Soft delete
+  
+  // Relations
+  ownedWorkspaces    Workspace[]      @relation("WorkspaceOwner")
+  workspaces         UserWorkspace[]
+  projectMemberships ProjectMember[]
+  assignedTasks      Task[]           @relation("AssignedTasks")
+  reportedTasks      Task[]           @relation("ReportedTasks")
+  timeEntries        TimeEntry[]
+  comments           Comment[]
+  notifications      Notification[]
+  activityLogs       AuditLog[]
+  sentInvites        WorkspaceInvitation[] @relation("InviteSender")
+
+  @@index([email])
+  @@index([isActive])
+}
+
+model Workspace {
+  id              String         @id @default(uuid())
+  name            String
+  description     String?
+  isActive        Boolean        @default(true)
+  settings        Json?          // Workspace-specific settings
+  icon            String?        // URL to workspace icon
+  banner          String?        // URL to workspace banner image
+  logo            String?        // URL to workspace logo
+  theme           Json?          // Theme settings including colors, fonts, etc.
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  deletedAt       DateTime?      // Soft delete
+  ownerId         String
+  
+  // Relations
+  owner           User            @relation("WorkspaceOwner", fields: [ownerId], references: [id])
+  members         UserWorkspace[]
+  projects        Project[]
+  customFields    CustomField[]
+  invitations     WorkspaceInvitation[]
+
+  @@index([ownerId])
+  @@index([isActive])
+  @@unique([name, ownerId])
+}
+
+model UserWorkspace {
+  id          String         @id @default(uuid())
+  userId      String
+  workspaceId String
+  role        WorkspaceRole  @default(MEMBER)
+  isActive    Boolean        @default(true)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  // Relations
+  user        User           @relation(fields: [userId], references: [id])
+  workspace   Workspace      @relation(fields: [workspaceId], references: [id])
+
+  @@unique([userId, workspaceId])
+  @@index([userId])
+  @@index([workspaceId])
+  @@index([role])
+}
+
+enum WorkspaceRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+model Project {
+  id              String         @id @default(uuid())
+  name            String
+  description     String?
+  workspaceId     String
+  status          ProjectStatus  @default(ACTIVE)
+  key             String         // Project key for task references (e.g., "PROJ")
+  isPublic        Boolean        @default(false)
+  icon            String?        // Project icon URL
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  deletedAt       DateTime?      // Soft delete
+  
+  // Relations
+  workspace       Workspace      @relation(fields: [workspaceId], references: [id])
+  sprints         Sprint[]
+  tasks           Task[]
+  members         ProjectMember[]
+  labels          Label[]
+  customFields    CustomField[]
+  taskTemplates   TaskTemplate[]
+
+  @@index([workspaceId])
+  @@index([status])
+  @@unique([workspaceId, key])
+}
+
+enum ProjectStatus {
+  ACTIVE
+  ARCHIVED
+  COMPLETED
+  ON_HOLD
+}
+
+model ProjectMember {
+  id          String       @id @default(uuid())
+  userId      String
+  projectId   String
+  role        ProjectRole  @default(MEMBER)
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  
+  // Relations
+  user        User         @relation(fields: [userId], references: [id])
+  project     Project      @relation(fields: [projectId], references: [id])
+
+  @@unique([userId, projectId])
+  @@index([userId])
+  @@index([projectId])
+  @@index([role])
+}
+
+enum ProjectRole {
+  MANAGER
+  LEAD
+  MEMBER
+  VIEWER
+}
+
+model Sprint {
+  id          String       @id @default(uuid())
+  name        String
+  projectId   String
+  goal        String?      // Sprint goal description
+  startDate   DateTime
+  endDate     DateTime
+  status      SprintStatus @default(PLANNING)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  
+  // Relations
+  project     Project      @relation(fields: [projectId], references: [id])
+  tasks       Task[]
+
+  @@index([projectId])
+  @@index([status])
+  @@index([startDate, endDate])
+}
+
+enum SprintStatus {
+  PLANNING
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+model Task {
+  id              String       @id @default(uuid())
+  title           String
+  description     String?      @db.Text  // Using Text for longer content
+  projectId       String
+  sprintId        String?
+  status          TaskStatus   @default(TODO)
+  priority        Priority     @default(MEDIUM)
+  assigneeId      String?
+  reporterId      String
+  taskNumber      Int          // Sequential number within project
+  timeEstimate    Int?         // in minutes
+  timeSpent       Int?         // in minutes
+  dueDate         DateTime?
+  isBlocked       Boolean      @default(false)
+  blockReason     String?
+  parentTaskId    String?      // For subtasks
+  position        Float        // For task ordering in backlog/boards
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  deletedAt       DateTime?    // Soft delete
+  
+  // Relations
+  project         Project      @relation(fields: [projectId], references: [id])
+  sprint          Sprint?      @relation(fields: [sprintId], references: [id])
+  assignee        User?        @relation("AssignedTasks", fields: [assigneeId], references: [id])
+  reporter        User         @relation("ReportedTasks", fields: [reporterId], references: [id])
+  parentTask      Task?        @relation("TaskHierarchy", fields: [parentTaskId], references: [id])
+  subtasks        Task[]       @relation("TaskHierarchy")
+  labels          Label[]
+  comments        Comment[]
+  timeEntries     TimeEntry[]
+  customFieldValues CustomFieldValue[]
+  dependencies    TaskDependency[]    @relation("DependingTasks")
+  dependents      TaskDependency[]    @relation("DependentTasks")
+  attachments     Attachment[]
+
+  @@unique([projectId, taskNumber])
+  @@index([projectId])
+  @@index([sprintId])
+  @@index([assigneeId])
+  @@index([status])
+  @@index([priority])
+  @@index([dueDate])
+}
+
+model TaskDependency {
+  id              String    @id @default(uuid())
+  taskId          String    // Task that depends on another
+  dependsOnId     String    // Task that is depended upon
+  type            DependencyType @default(BLOCKS)
+  
+  // Relations
+  task            Task      @relation("DependingTasks", fields: [taskId], references: [id])
+  dependsOn       Task      @relation("DependentTasks", fields: [dependsOnId], references: [id])
+
+  @@unique([taskId, dependsOnId])
+  @@index([taskId])
+  @@index([dependsOnId])
+}
+
+enum DependencyType {
+  BLOCKS
+  RELATES_TO
+  DUPLICATES
+  FOLLOWS
+}
+
+model TaskTemplate {
+  id          String    @id @default(uuid())
+  name        String
+  projectId   String
+  title       String
+  description String?
+  priority    Priority  @default(MEDIUM)
+  labels      Label[]
+  
+  // Relations
+  project     Project   @relation(fields: [projectId], references: [id])
+
+  @@index([projectId])
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  IN_REVIEW
+  DONE
+  CANCELLED
+  BLOCKED
+}
+
+enum Priority {
+  LOWEST
+  LOW
+  MEDIUM
+  HIGH
+  HIGHEST
+}
+
+model Label {
+  id          String    @id @default(uuid())
+  name        String
+  color       String
+  description String?
+  projectId   String
+  
+  // Relations
+  tasks       Task[]
+  project     Project   @relation(fields: [projectId], references: [id])
+  templates   TaskTemplate[]
+
+  @@unique([name, projectId])
+  @@index([projectId])
+}
+
+model TimeEntry {
+  id          String    @id @default(uuid())
+  taskId      String
+  userId      String
+  startTime   DateTime
+  endTime     DateTime?
+  description String?
+  billable    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Relations
+  task        Task      @relation(fields: [taskId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@index([taskId])
+  @@index([userId])
+  @@index([startTime, endTime])
+}
+
+model Comment {
+  id          String    @id @default(uuid())
+  content     String    @db.Text
+  taskId      String
+  userId      String
+  parentId    String?   // For comment replies
+  isEdited    Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime? // Soft delete
+  
+  // Relations
+  task        Task      @relation(fields: [taskId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+  parent      Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies     Comment[] @relation("CommentReplies")
+
+  @@index([taskId])
+  @@index([userId])
+}
+
+model CustomField {
+  id          String    @id @default(uuid())
+  name        String
+  type        String    // TEXT, NUMBER, DATE, SELECT, etc.
+  options     Json?     // For SELECT type fields
+  required    Boolean   @default(false)
+  projectId   String?
+  workspaceId String?   // If null, project-specific
+  
+  // Relations
+  project     Project?  @relation(fields: [projectId], references: [id])
+  workspace   Workspace? @relation(fields: [workspaceId], references: [id])
+  values      CustomFieldValue[]
+
+  @@index([projectId])
+  @@index([workspaceId])
+}
+
+model CustomFieldValue {
+  id            String    @id @default(uuid())
+  value         String    // Stored as string, converted based on type
+  customFieldId String
+  taskId        String
+  
+  // Relations
+  customField   CustomField @relation(fields: [customFieldId], references: [id])
+  task          Task       @relation(fields: [taskId], references: [id])
+
+  @@unique([customFieldId, taskId])
+  @@index([customFieldId])
+  @@index([taskId])
+}
+
+model Attachment {
+  id          String    @id @default(uuid())
+  filename    String
+  url         String
+  size        Int
+  mimeType    String
+  taskId      String
+  uploaderId  String
+  createdAt   DateTime  @default(now())
+  
+  // Relations
+  task        Task      @relation(fields: [taskId], references: [id])
+
+  @@index([taskId])
+}
+
+model AuditLog {
+  id          String    @id @default(uuid())
+  entityType  String    // Task, Project, etc.
+  entityId    String
+  action      String    // CREATE, UPDATE, DELETE
+  userId      String
+  changes     Json      // Before/After changes
+  createdAt   DateTime  @default(now())
+  
+  // Relations
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@index([entityType, entityId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Notification {
+  id          String    @id @default(uuid())
+  type        String    // MENTION, ASSIGNMENT, etc.
+  userId      String
+  title       String
+  content     String
+  read        Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  
+  // Relations
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt])
+}
+
+model WorkspaceInvitation {
+  id          String         @id @default(uuid())
+  email       String
+  role        WorkspaceRole  @default(MEMBER)
+  token       String         @unique
+  status      InviteStatus   @default(PENDING)
+  expiresAt   DateTime
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  // Relations
+  workspace   Workspace      @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+  inviter     User          @relation("InviteSender", fields: [inviterId], references: [id])
+  inviterId   String
+
+  @@index([workspaceId])
+  @@index([inviterId])
+  @@index([token])
+  @@index([status])
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
