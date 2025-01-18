@@ -1,49 +1,153 @@
 "use client";
 
-import { useEffect, useState } from 'react';
 import { fetchWithAuth } from "@/lib/auth";
 import { toast } from "sonner";
 import { WorkspaceHeader } from "./components/workspace-header";
 import { WorkspaceStats } from "./components/workspace-stats";
 import { WorkspaceContent } from "./components/workspace-content";
-import { Workspace } from "./types";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+interface Project {
+  id: string;
+  name: string;
+  description?: string;
+  status: 'ACTIVE' | 'ARCHIVED' | 'COMPLETED' | 'ON_HOLD';
+  key: string;
+  isPublic: boolean;
+  backgroundColor?: string
+  icon?: string;
+}
 
 interface WorkspaceClientProps {
   workspaceId: string;
 }
 
 const WorkspaceClient = ({ workspaceId }: WorkspaceClientProps) => {
-  const [workspace, setWorkspace] = useState<Workspace | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    async function fetchWorkspaceData() {
-      try {
-        setIsLoading(true);
-        setError(null);
-        
-        const response = await fetchWithAuth(`/api/workspaces/${workspaceId}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch workspace");
-        }
-        const data = await response.json();
-        setWorkspace(data.workspace);
-      } catch (error) {
-        console.error(error);
-        setError("Failed to load workspace");
-        toast.error("Failed to load workspace");
-      } finally {
-        setIsLoading(false);
+  // Query สำหรับดึงข้อมูล Workspace
+  const { data: workspace, isLoading: isWorkspaceLoading, error: workspaceError } = useQuery({
+    queryKey: ['workspace', workspaceId],
+    queryFn: async () => {
+      const response = await fetchWithAuth(`/api/workspaces/${workspaceId}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch workspace");
       }
+      const data = await response.json();
+      return data.workspace;
     }
+  });
 
-    if (workspaceId) {
-      fetchWorkspaceData();
+  // Query สำหรับดึงข้อมูล Projects
+  const { data: projects, isLoading: isProjectsLoading } = useQuery({
+    queryKey: ['projects', workspaceId],
+    queryFn: async () => {
+      const response = await fetchWithAuth(`/api/workspaces/${workspaceId}/projects`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch projects");
+      }
+      const data = await response.json();
+      return data.projects;
     }
-  }, [workspaceId]);
+  });
 
-  if (isLoading) {
+  // Mutation สำหรับสร้าง Project
+  const createProjectMutation = useMutation({
+    mutationFn: async (projectData: Omit<Project, "id">) => {
+      const response = await fetchWithAuth(`/api/workspaces/${workspaceId}/projects`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: projectData.name,
+          key: projectData.key,
+          description: projectData.description || "",
+          status: projectData.status || "ACTIVE",
+          isPublic: projectData.isPublic || false,
+          backgroundColor: projectData.backgroundColor || "#D69D78",
+          icon: projectData.icon || null
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create project');
+      }
+
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects', workspaceId] });
+      toast.success("Project created successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    }
+  });
+
+  // Mutation สำหรับอัพเดท Project
+  const updateProjectMutation = useMutation({
+    mutationFn: async ({ projectId, data }: { projectId: string; data: Partial<Project> }) => {
+      const response = await fetchWithAuth(`/api/workspaces/${workspaceId}/projects/${projectId}`, {
+        method: 'PATCH',
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to update project");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects', workspaceId] });
+      toast.success("Project updated successfully");
+    },
+    onError: () => {
+      toast.error("Failed to update project");
+    }
+  });
+
+  // Mutation สำหรับลบ Project
+  const deleteProjectMutation = useMutation({
+    mutationFn: async (projectId: string) => {
+      const response = await fetchWithAuth(`/api/workspaces/${workspaceId}/projects/${projectId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error("Failed to delete project");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects', workspaceId] });
+      toast.success("Project deleted successfully");
+    },
+    onError: () => {
+      toast.error("Failed to delete project");
+    }
+  });
+
+  // Handler functions
+  const handleCreateProject = () => {
+    createProjectMutation.mutate({
+      name: "New Project",
+      description: "",
+      status: "ACTIVE",
+      isPublic: false,
+      backgroundColor: "#D69D78",
+      icon: null 
+    });
+  };
+
+  const handleUpdateProject = (projectId: string, data: Partial<Project>) => {
+    updateProjectMutation.mutate({ projectId, data });
+  };
+
+  const handleDeleteProject = (projectId: string) => {
+    deleteProjectMutation.mutate(projectId);
+  };
+
+  if (isWorkspaceLoading || isProjectsLoading) {
     return (
       <div className="flex-1 p-6">
         <div className="animate-pulse space-y-4">
@@ -60,10 +164,10 @@ const WorkspaceClient = ({ workspaceId }: WorkspaceClientProps) => {
     );
   }
 
-  if (error) {
+  if (workspaceError) {
     return (
       <div className="flex-1 p-6">
-        <div className="text-center text-red-500">{error}</div>
+        <div className="text-center text-red-500">Failed to load workspace</div>
       </div>
     );
   }
@@ -77,8 +181,19 @@ const WorkspaceClient = ({ workspaceId }: WorkspaceClientProps) => {
       <div className="px-6 py-3">
         <WorkspaceHeader workspace={workspace} />
         <WorkspaceStats workspace={workspace} />
-        <WorkspaceContent />
+        <WorkspaceContent
+          projects={projects}
+          onCreateProject={handleCreateProject}
+          onUpdateProject={handleUpdateProject}
+          onDeleteProject={handleDeleteProject}
+          isLoading={{
+            create: createProjectMutation.isPending,
+            update: updateProjectMutation.isPending,
+            delete: deleteProjectMutation.isPending
+          }}
+        />
       </div>
+
     </div>
   );
 };

@@ -25,12 +25,16 @@ export default function WorkspaceInviteClient({ token }: WorkspaceInviteClientPr
             try {
                 setIsLoading(true);
                 const response = await fetchWithAuth(`/api/workspace-invites/${token}`);
-                const data = await response.json();
 
                 if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error("Invalid or expired invitation");
+                    }
+                    const data = await response.json().catch(() => ({}));
                     throw new Error(data.error || "Failed to load invitation");
                 }
 
+                const data = await response.json();
                 setWorkspace(data.workspace);
             } catch (error) {
                 console.error(error);

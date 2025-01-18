@@ -96,20 +96,23 @@ export function WorkspaceCard({ workspace, viewMode = 'grid' }: WorkspaceCardPro
         return (
             <>
                 <Card className="relative overflow-hidden group border-none bg-background">
-                    <div className="absolute top-0 left-0 bottom-0 w-2"
+                    {/* <div className="absolute top-0 left-0 bottom-0 w-2"
                         style={{ backgroundColor: workspace.theme?.color || "#4F46E5" }}
-                    />
+                    /> */}
                     <div className="p-4 flex items-center gap-4">
                         <Link href={`/workspace/${workspace.id}`} className="flex-1">
                             <div className="flex items-center gap-4">
                                 {workspace.icon ? (
-                                    <Image
-                                        src={workspace.icon}
-                                        alt={workspace.name}
-                                        width={40}
-                                        height={40}
-                                        className="w-10 h-10 rounded-lg object-cover"
-                                    />
+                                    <div className="p-1 rounded-lg" style={{ backgroundColor: workspace.theme?.color || "#4F46E5" }}>
+                                        <Image
+                                            src={workspace.icon}
+                                            alt={workspace.name}
+                                            width={40}
+                                            height={40}
+
+                                            className="w-10 h-10 rounded-lg object-cover"
+                                        />
+                                    </div>
                                 ) : (
                                     <div
                                         className="w-10 h-10 rounded-lg flex items-center justify-center text-white text-lg font-semibold"
@@ -157,23 +160,22 @@ export function WorkspaceCard({ workspace, viewMode = 'grid' }: WorkspaceCardPro
         <>
             <Card
                 className={`h-48 cursor-pointer relative overflow-hidden group border-none  bg-background`}>
-                <div
-                    className="absolute top-0 left-0 right-0 h-3"
-                    style={{ backgroundColor: workspace.theme?.color || "#4F46E5" }}
-                />
 
                 <div className="p-6 h-full flex flex-col">
                     <div className="flex items-start gap-4">
                         <Link href={`/workspace/${workspace.id}`} className="flex-1">
                             <div className="flex items-start gap-4">
                                 {workspace.icon ? (
-                                    <Image
-                                        src={workspace.icon}
-                                        alt={workspace.name}
-                                        width={48}
-                                        height={48}
-                                        className="w-12 h-12 rounded-lg object-cover"
-                                    />
+                                    <div className="p-1 rounded-lg" style={{ backgroundColor: workspace.theme?.color || "#4F46E5" }}>
+                                        <Image
+                                            src={workspace.icon}
+                                            alt={workspace.name}
+                                            width={40}
+                                            height={40}
+
+                                            className="w-10 h-10 rounded-lg object-cover"
+                                        />
+                                    </div>
                                 ) : (
                                     <div
                                         className="w-12 h-12 rounded-lg flex items-center justify-center text-white text-xl font-semibold"

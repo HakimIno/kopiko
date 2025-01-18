@@ -101,7 +101,9 @@ function useWorkspaces() {
     },
     gcTime: 1000 * 60 * 60, // 1 hour
     retry: 1,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 0, // เปลี่ยนเป็น 0 เพื่อให้ fetch ข้อมูลใหม่ทุกครั้ง
+    refetchOnMount: true, // เพิ่มการ refetch เมื่อ component mount
+    refetchOnWindowFocus: true, // เพิ่มการ refetch เมื่อ focus กลับมาที่ window
   });
 }
 

@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { QueryProvider } from "@/providers/query-provider";
 import Providers from "./providers";
+import { CreateWorkspaceDialog } from "@/components/workspace/create-workspace-dialog";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,6 +21,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+
+      </head>
       <body className={inter.className}>
         <Providers>
           <QueryProvider>
@@ -30,7 +34,9 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               {children}
-              <Toaster position="bottom-right" />
+              <Toaster
+                position="bottom-right" />
+              <CreateWorkspaceDialog />
             </ThemeProvider>
           </QueryProvider>
         </Providers>
