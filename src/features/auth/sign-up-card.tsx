@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { useState } from "react"
 import { Loader2 } from "lucide-react"
+import Logo from "@/components/logo"
 
 const formSchema = z.object({
     name: z.string().trim().min(1, "Name is required"),
@@ -70,9 +71,10 @@ export const SignUpCard = () => {
         <Card className="w-full h-full md:w-[487px] border-none shadow-none p-4">
             <CardHeader className="flex items-center justify-center text-center p-7">
                 <CardTitle className="text-2xl flex flex-col items-center gap-3">
-                    <div className="p-2 bg-[#D69D78] rounded-s-3xl rounded-t-2xl border border-black">
+                    {/* <div className="p-2 bg-[#D69D78] rounded-s-3xl rounded-t-2xl border border-black">
                         <Image src={"/logo.svg"} width={70} height={70} alt="logo" />
-                    </div>
+                    </div> */}
+                    <Logo scale={0.9} />
                     Sign up
                 </CardTitle>
                 <CardDescription>
@@ -99,7 +101,7 @@ export const SignUpCard = () => {
                                             {...field}
                                             type="text"
                                             placeholder="Enter name"
-                                            className="w-full h-10 rounded-lg"
+                                            className="w-full h-10 rounded-full dark:focus:bg-black dark:focus:text-white"
                                             disabled={isLoading}
                                         />
                                     </FormControl>
@@ -117,7 +119,7 @@ export const SignUpCard = () => {
                                             {...field}
                                             type="email"
                                             placeholder="Enter email address"
-                                            className="w-full h-10 rounded-lg"
+                                            className="w-full h-10 rounded-full dark:focus:bg-black dark:focus:text-white"
                                             disabled={isLoading}
                                         />
                                     </FormControl>
@@ -135,7 +137,7 @@ export const SignUpCard = () => {
                                             {...field}
                                             type="password"
                                             placeholder="Enter password"
-                                            className="w-full h-10 rounded-lg"
+                                            className="w-full h-10 rounded-full dark:focus:bg-black dark:focus:text-white"
                                             disabled={isLoading}
                                         />
                                     </FormControl>
@@ -147,7 +149,7 @@ export const SignUpCard = () => {
                         <Button
                             type="submit"
                             size="lg"
-                            className="w-full font-semibold py-2 rounded-lg"
+                            className="w-full font-semibold py-2 rounded-full"
                             disabled={isLoading}
                         >
                             {isLoading ? (
@@ -168,23 +170,23 @@ export const SignUpCard = () => {
             </div>
 
             <CardContent className="p-7 flex flex-col gap-4">
-                <Button 
-                    variant="secondary" 
-                    size="lg" 
-                    className="w-full rounded-lg font-semibold py-2"
+                <Button
+                    variant="secondary"
+                    size="lg"
+                    className="w-full rounded-full font-semibold py-2 dark:bg-[#1a1a1a] dark:text-white"
                     disabled={isLoading}
                 >
                     <Image src={"/icons8-google.svg"} width={24} height={24} alt="google" />
-                    Sign up with Google
+                    Login with Google
                 </Button>
-                <Button 
-                    variant="tertiary" 
-                    size="lg" 
-                    className="w-full rounded-lg text-black font-semibold py-2"
+                <Button
+                    variant="secondary"
+                    size="lg"
+                    className="w-full rounded-full font-semibold py-2 dark:bg-[#1a1a1a] dark:text-white"
                     disabled={isLoading}
                 >
                     <Image src={"/icons8-github.svg"} width={24} height={24} alt="github" />
-                    Sign up with Github
+                    Login with Github
                 </Button>
             </CardContent>
 
@@ -192,13 +194,33 @@ export const SignUpCard = () => {
                 <DottedSeparator />
             </div>
 
-            <CardContent className="p-7 flex items-center justify-center">
-                <p className="text-sm">
-                    Already have an account? {"    "}
-                    <Link href={"/sign-in"}>
-                        <span className=" text-[#D69D78]">Sign In</span>
+            <CardContent className="p-6">
+                <div className="flex items-center justify-center space-x-2 font-anuphan text-sm">
+                    <p className="text-sm">
+                        มีบัญชีอยู่แล้วใช่ไหม?
+                    </p>
+                    <Link
+                        href="/sign-in"
+                        className="inline-flex items-center"
+                    >
+                        <span className="text-[#D69D78] hover:text-[#B67E5C] font-medium">
+                            เข้าสู่ระบบ
+                        </span>
+                        <svg
+                            className="w-4 h-4 ml-1 text-[#D69D78]"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M9 5l7 7-7 7"
+                            />
+                        </svg>
                     </Link>
-                </p>
+                </div>
             </CardContent>
         </Card>
     )

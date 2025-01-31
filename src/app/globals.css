@@ -61,8 +61,161 @@
 @layer base {
   * {
     @apply border-border;
+    font-family: var(--font-lato);
   }
   body {
     @apply bg-background text-foreground;
   }
+  .thai-font {
+    font-family: var(--font-anuphan);
+  }
 }
+
+
+::-moz-selection{background:#1A1A1A;color:#FFF}
+::selection{background:#1A1A1A;color:#FFF}
+a{text-decoration:none;cursor:pointer}
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{margin:0;padding:0;border:0;font:inherit;font-size:100%;vertical-align:baseline}
+html,body{overflow-X:hidden}
+.kolor-tla{background-color:#a8714d;-webkit-transition:background .3s ease-in-out;transition:background .3s ease-in-out}
+.pozycja{display:table;position:absolute;height:100%;width:100%}
+.srodek{display:table-cell;vertical-align:middle;padding:20px 0px}
+span{display:block}
+#qlogo{width:100px;height:140px;margin:0 auto;text-align:center;position:relative;border:3px solid transparent;-webkit-transition:border-color .3s ease-in-out;transition:border-color .3s ease-in-out}
+.poziomq{text-align:center;position:relative;top:33%;display:inline-block;width:105px;-webkit-animation:ruchLewitacja 3s ease-in-out infinite;animation:ruchLewitacja 3s ease-in-out infinite}
+.cialo{background:#D69D78;margin:0 auto;width:105px;height:105px;border-radius:25%;position:relative}
+.liscie{position:relative}
+.liscie .lodyga{width:25px;height:45px;border:10px solid #44A48E;border-bottom:none;border-right:none;position:absolute;top:-60px;left:50%;margin-left:-5px;border-top-left-radius:30px}
+.liscie .lisc-lewy{width:0px;height:10px;border:10px solid #44A48E;border-top:none;position:absolute;top:-25px;left:20px;border-bottom-left-radius:10px}
+.liscie .lisc-lewy.drugi{left:31px}
+.liscie .lisc-prawy{width:0px;height:10px;border:10px solid #44A48E;border-top:none;position:absolute;top:-25px;right:21px;border-bottom-right-radius:10px}
+.liscie .lisc-prawy.drugi{right:32px}
+.liscie .after{content:"";display:block;width:0px;height:0px;position:absolute;top:0px;border-top:20px solid #a8714d;border-right:20px solid transparent;border-left:20px solid transparent;-webkit-transition:border-top-color .3s ease-in-out;transition:border-top-color .3s ease-in-out}
+.liscie .lisc-lewy  .after{left:-10px}
+.liscie .lisc-prawy .after{right:-10px}
+.twarz{width:105px;position:relative}
+.oczy{width:105px;height:20px;position:relative;-webkit-transform-origin:center;transform-origin:center}
+.oczy .oko{position:absolute;width:12px;height:12px;background:#1A1A1A;top:28px;border-radius:50%;-webkit-animation:ruchOczy 12s infinite ease-in-out;animation:ruchOczy 12s infinite ease-in-out}
+.oczy .oko:before{content:"";display:block;width:14px;height:0px;background:#D69D78;position:absolute;left:-1px;top:-1px;-webkit-transition:height .1s ease-in-out;transition:height .1s ease-in-out}
+.oczy .oko:after{content:"";display:block;width:14px;height:0px;background:#D69D78;position:absolute;left:-1px;bottom:-1px;-webkit-transition:height .1s ease-in-out;transition:height .1s ease-in-out}
+.oczy .oko.oko-lewe{left:16%}
+.oczy .oko.oko-prawe{right:16%}
+.piegi{width:105px;height:10px;position:relative}
+.piegi .pieg{position:absolute;width:5px;height:5px;background:#C4605B;top:27px;border-radius:0%;-webkit-transition:top .1s ease-in-out;transition:top .1s ease-in-out}
+.piegi .pieg:after{content:"";display:block;width:5px;height:5px;background:#C4605B;position:absolute;top:0px;border-radius:0%}
+.piegi .pieg.pieg-lewy{left:10%}
+.piegi .pieg.pieg-lewy:after{left:20px}
+.piegi .pieg.pieg-prawy{right:10%}
+.piegi .pieg.pieg-prawy:after{right:20px}
+.buzia{width:85px;height:35px;background:#F93348;position:relative;top:28px;left:10px;border-radius:0% 0% 70% 70% / 0% 0% 140% 140%;-webkit-transition:all .1s ease-in-out;transition:all .1s ease-in-out;overflow:hidden}
+.buzia .zuby{width:85px;height:7px;background:#fff;position:absolute;top:0px;left:0;border-radius:0 0 5px 5px / 0 0 35px 35px;-webkit-transition:all .1s ease-in-out;transition:all .1s ease-in-out}
+.buzia .gardlo{width:85px;height:14px;background:rgba(0,0,0,0.15);position:absolute;top:0px;left:0;border-radius:0 0 13px 13px / 0 0 35px 35px;-webkit-transition:all .1s ease-in-out;transition:all .1s ease-in-out}
+.rece .reka{background:#D69D78;width:2px;height:30px;position:absolute;top:80px;-webkit-transform:rotate(0deg);transform:rotate(0deg)}
+.rece .reka.reka-lewa{left:7px}
+.rece .reka.reka-prawa{right:7px}
+.rece .reka:after{content:"";display:block;width:4px;height:2px;background:#D69D78;position:absolute;top:27px;left:-1px}
+.nogi{position:relative}
+.nogi > *{width:20px;height:2px;background:#D69D78;position:absolute;-webkit-transform-origin:center;transform-origin:center}
+.nogi .noga-lewa{bottom:0px;left:15px;-webkit-transform:rotate(90deg);transform:rotate(90deg)}
+.nogi .noga-lewa:after{content:"";display:block;width:2px;height:6px;background:#D69D78;position:absolute;bottom:-4px;left:18px}
+.nogi .noga-prawa{bottom:0px;right:15px;-webkit-transform:rotate(90deg);transform:rotate(90deg)}
+.nogi .noga-prawa:after{content:"";display:block;width:2px;height:6px;background:#D69D78;position:absolute;top:-4px;left:18px}
+.cien{display:block;width:120px;height:50px;background:rgba(0,0,0,0.2);border-radius:50%;margin-left:40px;position:absolute;bottom:0px;-webkit-animation:ruchCien 3s ease-in-out infinite;animation:ruchCien 3s ease-in-out infinite}
+
+.poziomq:hover .oczy .oko:before{height:0px}
+.poziomq:hover .oczy .oko:after{height:6px}
+.poziomq:hover .piegi .pieg{top:22px}
+.poziomq:hover .buzia{width:45px;height:15px;top:34px;left:30px}
+.poziomq:hover .buzia .zuby{width:45px;height:0px;top:0px}
+.poziomq:hover .buzia .gardlo{width:45px;height:3px;top:0px}
+.poziomq:hover .noga-lewa{-webkit-animation:ruchNogaLewa .15s ease-in-out infinite;animation:ruchNogaLewa .15s ease-in-out infinite}
+.poziomq:hover .noga-prawa{-webkit-animation:ruchNogaPrawa .15s ease-in-out infinite;animation:ruchNogaPrawa .15s ease-in-out infinite}
+.poziomq:hover .reka{top:auto;bottom:25px}
+.poziomq:hover .reka-lewa{left:4px;-webkit-transform:rotate(90deg);transform:rotate(90deg);-webkit-animation:ruchNogaLewa .15s ease-in-out infinite;animation:ruchNogaLewa .15s ease-in-out infinite}
+.poziomq:hover .reka-prawa{right:4px;-webkit-transform:rotate(-90deg);transform:rotate(-90deg);-webkit-animation:ruchRekaLewa .15s ease-in-out infinite;animation:ruchRekaLewa .15s ease-in-out infinite}
+
+.poziomq:hover .piegi .pieg{top:18px}
+.poziomq:hover .oczy .oko:before{height:3px}
+.poziomq:hover .oczy .oko:after{height:3px}
+.poziomq:hover .buzia{width:80px;height:48px;top:17px;left:13px;border-radius:44%}
+.poziomq:hover .buzia .zuby{width:55px;height:7px;top:0px;left:13px;border-radius:80% 80% 0% 0% / 140% 140% 0% 0%}
+.poziomq:hover .buzia .gardlo{width:80px;height:30px;top:0px;left:0px;border-radius:80% 80% 0% 0% / 104% 104% 0% 0%}
+.poziomq:hover .liscie,.poziomq:hover .cialo{-webkit-transform:rotate(0deg);transform:rotate(0deg);-webkit-animation:ruchWstrzas .15s ease-in-out infinite;animation:ruchWstrzas .15s ease-in-out infinite}
+
+.tekst{opacity:0;color:rgba(0,0,0,0.7);display:block;position:absolute;top:10px;right:-50%;font-family:'Lato',arial,sans-serif;font-size:11px;display:block;letter-spacing:2px;width:100%;text-align:center;text-transform:uppercase;font-size:14px;line-height:28px;font-weight:bold;-webkit-animation:ruchTekst 30s ease-in-out infinite;animation:ruchTekst 30s ease-in-out infinite}
+.tekst:after{content:"";display:block;width:20px;height:20px;border:1px solid rgba(0,0,0,0.6);border-top:none;border-left:none;position:absolute;bottom:-25px;left:50%;margin-left:-22px;border-bottom-right-radius:30px}
+
+
+/*! animacja tekst */
+@-webkit-keyframes ruchTekst{
+0%, 3%, 18%, 100%{opacity:0}
+4.5%, 16.5%{opacity:1}
+}
+@keyframes ruchTekst{
+0%, 3%, 18%, 100%{opacity:0}
+4.5%, 16.5%{opacity:1}
+}
+/* animacja oczy */
+@-webkit-keyframes ruchOczy{
+0%, 4%, 6%, 49%, 51%, 53%, 100%{-webkit-transform:rotateX(0deg);transform:rotateX(0deg)}
+5%, 50%, 52%{-webkit-transform:rotateX(90deg);transform:rotateX(90deg)}
+}
+@keyframes ruchOczy{
+0%, 4%, 6%, 49%, 51%, 53%, 100%{-webkit-transform:rotateX(0deg);transform:rotateX(0deg)}
+5%, 50%, 52%{-webkit-transform:rotateX(90deg);transform:rotateX(90deg)}
+}
+/* animacja cien */
+@-webkit-keyframes ruchCien{
+0%, 100%{-webkit-transform:scale(1) rotateX(100deg);transform:scale(1) rotateX(100deg)}
+50%{-webkit-transform:scale(0.7) rotateX(100deg);transform:scale(0.7) rotateX(100deg)}
+}
+@keyframes ruchCien{
+0%, 100%{-webkit-transform:scale(1) rotateX(100deg);transform:scale(1) rotateX(100deg)}
+50%{-webkit-transform:scale(0.7) rotateX(100deg);transform:scale(0.7) rotateX(100deg)}
+}
+/* animacja latanie */
+@-webkit-keyframes ruchLewitacja{
+0%, 100%{-webkit-transform:translateY(0);transform:translateY(0)}
+50%{-webkit-transform:translateY(-25px);transform:translateY(-25px)}
+}
+@keyframes ruchLewitacja{
+0%, 100%{-webkit-transform:translateY(0);transform:translateY(0)}
+50%{-webkit-transform:translateY(-25px);transform:translateY(-25px)}
+}
+/*! animacja noga lewa */
+@-webkit-keyframes ruchNogaLewa{
+0%, 100%{-webkit-transform:rotateZ(75deg);transform:rotateZ(75deg)}
+50%{-webkit-transform:rotateZ(100deg);transform:rotateZ(100deg)}
+}
+@keyframes ruchNogaLewa{
+0%, 100%{-webkit-transform:rotateZ(75deg);transform:rotateZ(75deg)}
+50%{-webkit-transform:rotateZ(100deg);transform:rotateZ(100deg)}
+}
+/*! animacja noga prawa */
+@-webkit-keyframes ruchNogaPrawa{
+0%, 100%{-webkit-transform:rotateZ(105deg);transform:rotateZ(105deg)}
+50%{-webkit-transform:rotateZ(75deg);transform:rotateZ(75deg)}
+}
+@keyframes ruchNogaPrawa{
+0%, 100%{-webkit-transform:rotateZ(105deg);transform:rotateZ(105deg)}
+50%{-webkit-transform:rotateZ(75deg);transform:rotateZ(75deg)}
+}
+/*! animacja reka prawa */
+@-webkit-keyframes ruchRekaLewa{
+0%, 100%{-webkit-transform:rotateZ(-75deg);transform:rotateZ(-75deg)}
+50%{-webkit-transform:rotateZ(-105deg);transform:rotateZ(-105deg)}
+}
+@keyframes ruchRekaLewa{
+0%, 100%{-webkit-transform:rotateZ(-75deg);transform:rotateZ(-75deg)}
+50%{-webkit-transform:rotateZ(-105deg);transform:rotateZ(-105deg)}
+}
+/*! animacja wstrzas */
+@-webkit-keyframes ruchWstrzas{
+0%, 100%{-webkit-transform:rotateZ(1deg);transform:rotateZ(1deg)}
+50%{-webkit-transform:rotateZ(-1deg);transform:rotateZ(-1deg)}
+}
+@keyframes ruchWstrzas{
+0%, 100%{-webkit-transform:rotateZ(2deg);transform:rotateZ(2deg)}
+50%{-webkit-transform:rotateZ(-2deg);transform:rotateZ(-2deg)}
+}
+

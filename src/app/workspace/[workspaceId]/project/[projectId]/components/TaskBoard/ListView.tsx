@@ -1,10 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Plus, User2, MoreHorizontal } from 'lucide-react';
+import { Plus, User2, MoreHorizontal, Clock, Filter, Search } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
     Table,
@@ -14,310 +12,324 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { useTasks } from "@/hooks/use-tasks";
+import { useParams } from "next/navigation";
+import { Task, Priority, TaskStatus } from "@prisma/client";
+import { format } from "date-fns";
+import { CreateTaskDialog } from "../TaskDialog/CreateTaskDialog";
 
-type TaskStatus = 'DEPLOYMENT' | 'VALIDATE' | 'COMPLETED' | 'IN PROGRESS' | 'PLAN';
-type PriorityLevel = 'High' | 'Normal' | 'Low';
-
-interface Assignee {
-    name: string;
-    avatar: string;
+interface TaskWithDetails extends Task {
+    assignee?: {
+        id: string;
+        name: string;
+        email: string;
+    };
+    reporter: {
+        id: string;
+        name: string;
+        email: string;
+    };
+    labels: {
+        id: string;
+        name: string;
+        color: string;
+    }[];
 }
 
-interface Task {
-    id: string;
+interface TaskFormData {
     title: string;
     description: string;
-    priority: PriorityLevel;
+    priority: Priority;
     status: TaskStatus;
-    assignees?: Assignee[];
-    startDate?: string;
-    dueDate?: string;
-    reporter?: string;
+    startDate?: Date;
+    dueDate?: Date;
+    assigneeId?: string;
+    timeEstimate?: number;
+    isBlocked: boolean;
+    blockReason: string;
 }
 
-interface StatusColor {
-    bg: string;
-    text: string;
-}
-
-interface PriorityStyle {
-    icon: string;
-    color: string;
-}
-
-const statusColors: Record<TaskStatus, StatusColor> = {
-    'DEPLOYMENT': { bg: 'bg-emerald-100', text: 'text-emerald-800' },
-    'VALIDATE': { bg: 'bg-orange-100', text: 'text-orange-800' },
-    'COMPLETED': { bg: 'bg-green-100', text: 'text-green-800' },
-    'IN PROGRESS': { bg: 'bg-blue-100', text: 'text-blue-800' },
-    'PLAN': { bg: 'bg-gray-100', text: 'text-gray-800' },
-};
-
-const priorityColors: Record<PriorityLevel, PriorityStyle> = {
-    'High': { icon: '🟨', color: 'text-yellow-500' },
-    'Normal': { icon: '🟦', color: 'text-blue-500' },
-    'Low': { icon: '⬜', color: 'text-gray-500' },
-};
-
-const initialTasks: Task[] = [
-    {
-        id: '1',
-        title: '27-09-2024 - Rerport web api and frontend, moile api',
-        description: '',
-        priority: 'High',
-        status: 'DEPLOYMENT',
-        assignees: [{ name: 'KS', avatar: 'KS' }],
-        startDate: '9/27/24',
-        dueDate: '9/27/24',
-        reporter: 'P\'Sao'
-    },
-    {
-        id: '2',
-        title: 'T102-Font-ปรับ ปฏิทินให้ Default วันที่ 1/check begin-end-date',
-        description: '',
-        priority: 'Normal',
-        status: 'DEPLOYMENT',
-        startDate: '1/10/24',
-        dueDate: '1/10/24',
-        reporter: 'P\'Sao'
-    },
-    {
-        id: '3',
-        title: 'T102-Font-ปรับ ปฏิทินให้ Default วันที่ 1/check begin-end-date',
-        description: '',
-        priority: 'Normal',
-        status: 'DEPLOYMENT',
-        startDate: '1/10/24',
-        dueDate: '1/10/24',
-        reporter: 'P\'Sao'
-    },
-    {
-        id: '4',
-        title: 'T102-Font-ปรับ ปฏิทินให้ Default วันที่ 1/check begin-end-date',
-        description: '',
-        priority: 'Normal',
-        status: 'DEPLOYMENT',
-        startDate: '1/10/24',
-        dueDate: '1/10/24',
-        reporter: 'P\'Sao'
-    },
-    {
-        id: '3',
-        title: 'T706-Eslip-Site',
-        description: '',
-        priority: 'Normal',
-        status: 'VALIDATE',
-        assignees: [
-            { name: 'PP', avatar: 'PP' },
-            { name: 'KS', avatar: 'KS' },
-            { name: 'EA', avatar: 'EA' },
-            { name: 'WU', avatar: 'WU' }
-        ],
-        startDate: '7/1/24',
-        dueDate: '8/2/24',
-        reporter: 'P\'Sao'
-    }
-];
-
-interface TaskGroupHeaderProps {
-    status: TaskStatus;
-    count: number;
-    isExpanded: boolean;
-    onToggle: (status: TaskStatus) => void;
-}
-
-const TaskGroupHeader: React.FC<TaskGroupHeaderProps> = ({ status, count, isExpanded, onToggle }) => {
-    return (
-        <div
-            className="flex items-center space-x-2 cursor-pointer"
-            onClick={() => onToggle(status)}
-        >
-            <motion.div
-                initial={{ rotate: 0 }}
-                animate={{ rotate: isExpanded ? 180 : 0 }}
-                transition={{ duration: 0.2 }}
-            >
-                <ChevronDown className="w-4 h-4" />
-            </motion.div>
-            <Badge
-                variant="outline"
-                className={`${statusColors[status].bg} ${statusColors[status].text} border-none`}
-            >
-                {status}
-            </Badge>
-            <span className="text-sm text-gray-500">{count}</span>
-            <Button variant="ghost" size="sm" className="ml-2">
-                <Plus className="w-4 h-4" />
-                Add Task
-            </Button>
-        </div>
+const ListView = () => {
+    const params = useParams();
+    const [isCreateTaskOpen, setIsCreateTaskOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [statusFilter, setStatusFilter] = useState<TaskStatus | "ALL">("ALL");
+    const [priorityFilter, setPriorityFilter] = useState<Priority | "ALL">("ALL");
+    
+    const { tasks, isLoading, createTask, updateTask, deleteTask } = useTasks(
+        params.workspaceId as string,
+        params.projectId as string
     );
-};
 
-interface TaskRowProps {
-    task: Task;
-}
-
-const TaskRow: React.FC<TaskRowProps> = ({ task }) => {
-    return (
-        <motion.tr
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-            className="group hover:bg-gray-50 dark:hover:bg-gray-800/50"
-        >
-            <TableCell className="font-medium">{task.title}</TableCell>
-            <TableCell>
-                {task.assignees ? (
-                    <div className="flex -space-x-2">
-                        {task.assignees.map((assignee, index) => (
-                            <Avatar key={index} className="w-6 h-6 border-2 border-white">
-                                <AvatarFallback className="bg-blue-500 text-white text-xs">
-                                    {assignee.avatar}
-                                </AvatarFallback>
-                            </Avatar>
-                        ))}
-                    </div>
-                ) : (
-                    <User2 className="w-5 h-5 text-gray-400" />
-                )}
-            </TableCell>
-            <TableCell>{task.startDate}</TableCell>
-            <TableCell>{task.dueDate}</TableCell>
-            <TableCell>
-                <div className="flex items-center space-x-1">
-                    <span>{priorityColors[task.priority].icon}</span>
-                    <span className={priorityColors[task.priority].color}>
-                        {task.priority}
-                    </span>
-                </div>
-            </TableCell>
-            <TableCell>
-                <Badge
-                    variant="outline"
-                    className={`${statusColors[task.status].bg} ${statusColors[task.status].text} border-none`}
-                >
-                    {task.status}
-                </Badge>
-            </TableCell>
-            <TableCell>{task.reporter}</TableCell>
-            <TableCell>-</TableCell>
-            <TableCell>
-                <Button variant="ghost" size="icon">
-                    <MoreHorizontal className="w-4 h-4" />
-                </Button>
-            </TableCell>
-        </motion.tr>
-    );
-};
-
-interface TaskGroupProps {
-    status: TaskStatus;
-    tasks: Task[];
-    isExpanded: boolean;
-    onToggle: (status: TaskStatus) => void;
-}
-
-const TaskGroup: React.FC<TaskGroupProps> = ({
-    status,
-    tasks,
-    isExpanded,
-    onToggle
-}) => {
-    return (
-        <>
-            <TableRow className="group">
-                <TableCell colSpan={9} className="bg-background hover:bg-gray-100 dark:hover:bg-gray-800/50">
-                    <TaskGroupHeader
-                        status={status}
-                        count={tasks.length}
-                        isExpanded={isExpanded}
-                        onToggle={onToggle}
-                    />
-                </TableCell>
-            </TableRow>
-            <AnimatePresence initial={false}>
-                {isExpanded && (
-                    <motion.tr
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.2 }}
-                    >
-                        <td colSpan={9} className="p-0">
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.2, delay: 0.1 }}
-                            >
-                                <Table>
-                                    <TableBody>
-                                        {tasks.map((task) => (
-                                            <TaskRow key={task.id} task={task} />
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </motion.div>
-                        </td>
-                    </motion.tr>
-                )}
-            </AnimatePresence>
-        </>
-    );
-};
-
-const ListView: React.FC = () => {
-    const [tasks, setTasks] = useState<Task[]>(initialTasks);
-    const [expandedGroups, setExpandedGroups] = useState<TaskStatus[]>(['DEPLOYMENT']);
-
-    const toggleGroup = (status: TaskStatus): void => {
-        setExpandedGroups(prev =>
-            prev.includes(status)
-                ? prev.filter(s => s !== status)
-                : [...prev, status]
-        );
+    const handleCreateTask = async (taskData: TaskFormData) => {
+        try {
+            await createTask.mutateAsync({
+                ...taskData,
+                status: taskData.status || 'TODO'
+            });
+            setIsCreateTaskOpen(false);
+        } catch (error) {
+            console.error('Failed to create task:', error);
+        }
     };
 
-    const groupedTasks = tasks.reduce((acc, task) => {
-        if (!acc[task.status]) {
-            acc[task.status] = [];
+    const handleUpdateTaskStatus = async (taskId: string, status: TaskStatus) => {
+        try {
+            await updateTask.mutateAsync({
+                taskId,
+                data: { status }
+            });
+        } catch (error) {
+            console.error('Failed to update task status:', error);
         }
-        acc[task.status].push(task);
-        return acc;
-    }, {} as Record<TaskStatus, Task[]>);
+    };
+
+    const handleDeleteTask = async (taskId: string) => {
+        try {
+            await deleteTask.mutateAsync(taskId);
+        } catch (error) {
+            console.error('Failed to delete task:', error);
+        }
+    };
+
+    const filteredTasks = tasks?.tasks?.filter((task: TaskWithDetails) => {
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            if (!task.title.toLowerCase().includes(query) &&
+                !task.description?.toLowerCase().includes(query)) {
+                return false;
+            }
+        }
+        
+        if (statusFilter !== "ALL" && task.status !== statusFilter) {
+            return false;
+        }
+        
+        if (priorityFilter !== "ALL" && task.priority !== priorityFilter) {
+            return false;
+        }
+        
+        return true;
+    });
+
+    if (isLoading) {
+        return <div className="p-8 text-center">Loading tasks...</div>;
+    }
 
     return (
-        <div className="w-full px-6">
-            <div className="border rounded-lg overflow-hidden bg-white dark:bg-[#1a1a1a]">
-                <Table className="border-collapse [&_tr:last-child]:border-0">
-                    <TableHeader className="bg-white dark:bg-[#1a1a1a] rounded-lg sticky top-0 z-10">
-                        <TableRow className="border-b">
-                            <TableHead className="w-[35%] min-w-[300px]">Name</TableHead>
-                            <TableHead className="w-[12%] min-w-[120px]">Assignee</TableHead>
-                            <TableHead className="w-[10%] min-w-[100px]">Start date</TableHead>
-                            <TableHead className="w-[10%] min-w-[100px]">Due date</TableHead>
-                            <TableHead className="w-[8%] min-w-[90px]">Priority</TableHead>
-                            <TableHead className="w-[10%] min-w-[100px]">Status</TableHead>
-                            <TableHead className="w-[8%] min-w-[90px]">Reporter</TableHead>
-                            <TableHead className="w-[5%] min-w-[60px]">Done</TableHead>
-                            <TableHead className="w-[2%] min-w-[40px]" aria-hidden="true" />
+        <div className="p-6">
+            {/* Filters and Search */}
+            <div className="mb-6 space-y-4">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <div className="relative w-64">
+                            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input
+                                placeholder="Search tasks..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="pl-8"
+                            />
+                        </div>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" className="gap-2">
+                                    <Filter className="h-4 w-4" />
+                                    Status: {statusFilter}
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                <DropdownMenuItem onClick={() => setStatusFilter("ALL")}>
+                                    All
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setStatusFilter("TODO")}>
+                                    To Do
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setStatusFilter("IN_PROGRESS")}>
+                                    In Progress
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setStatusFilter("IN_REVIEW")}>
+                                    In Review
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setStatusFilter("DONE")}>
+                                    Done
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" className="gap-2">
+                                    <Filter className="h-4 w-4" />
+                                    Priority: {priorityFilter}
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                <DropdownMenuItem onClick={() => setPriorityFilter("ALL")}>
+                                    All
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setPriorityFilter("HIGHEST")}>
+                                    Highest
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setPriorityFilter("HIGH")}>
+                                    High
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setPriorityFilter("MEDIUM")}>
+                                    Medium
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setPriorityFilter("LOW")}>
+                                    Low
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setPriorityFilter("LOWEST")}>
+                                    Lowest
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+                    <Button onClick={() => setIsCreateTaskOpen(true)}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Create Task
+                    </Button>
+                </div>
+            </div>
+
+            {/* Tasks Table */}
+            <div className="rounded-md border">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Title</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead>Priority</TableHead>
+                            <TableHead>Assignee</TableHead>
+                            <TableHead>Due Date</TableHead>
+                            <TableHead>Created</TableHead>
+                            <TableHead className="w-[70px]"></TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {Object.entries(groupedTasks).map(([status, statusTasks]) => (
-                            <TaskGroup
-                                key={status}
-                                status={status as TaskStatus}
-                                tasks={statusTasks}
-                                isExpanded={expandedGroups.includes(status as TaskStatus)}
-                                onToggle={toggleGroup}
-                            />
+                        {filteredTasks?.map((task: TaskWithDetails) => (
+                            <TableRow key={task.id}>
+                                <TableCell>
+                                    <div>
+                                        <div className="font-medium">{task.title}</div>
+                                        {task.description && (
+                                            <div className="text-sm text-gray-500">{task.description}</div>
+                                        )}
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button 
+                                                variant="ghost" 
+                                                className={`w-[110px] justify-start gap-2 ${
+                                                    task.status === 'DONE' ? 'text-green-600' :
+                                                    task.status === 'IN_PROGRESS' ? 'text-blue-600' :
+                                                    task.status === 'IN_REVIEW' ? 'text-purple-600' :
+                                                    'text-gray-600'
+                                                }`}
+                                            >
+                                                <span className="h-2 w-2 rounded-full bg-current" />
+                                                {task.status}
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent>
+                                            <DropdownMenuItem onClick={() => handleUpdateTaskStatus(task.id, "TODO")}>
+                                                To Do
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => handleUpdateTaskStatus(task.id, "IN_PROGRESS")}>
+                                                In Progress
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => handleUpdateTaskStatus(task.id, "IN_REVIEW")}>
+                                                In Review
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => handleUpdateTaskStatus(task.id, "DONE")}>
+                                                Done
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+                                <TableCell>
+                                    <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+                                        task.priority === 'HIGHEST' ? 'bg-red-100 text-red-700' :
+                                        task.priority === 'HIGH' ? 'bg-orange-100 text-orange-700' :
+                                        task.priority === 'MEDIUM' ? 'bg-yellow-100 text-yellow-700' :
+                                        task.priority === 'LOW' ? 'bg-green-100 text-green-700' :
+                                        'bg-gray-100 text-gray-700'
+                                    }`}>
+                                        {task.priority}
+                                    </span>
+                                </TableCell>
+                                <TableCell>
+                                    {task.assignee ? (
+                                        <div className="flex items-center gap-2">
+                                            <Avatar className="h-6 w-6">
+                                                <AvatarFallback>
+                                                    {task.assignee.name.slice(0, 2).toUpperCase()}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <span className="text-sm">{task.assignee.name}</span>
+                                        </div>
+                                    ) : (
+                                        <Button variant="ghost" size="sm" className="gap-2">
+                                            <User2 className="h-4 w-4" />
+                                            Unassigned
+                                        </Button>
+                                    )}
+                                </TableCell>
+                                <TableCell>
+                                    {task.dueDate ? (
+                                        <div className="flex items-center gap-2">
+                                            <Clock className="h-4 w-4" />
+                                            <span className="text-sm">
+                                                {format(new Date(task.dueDate), 'MMM d, yyyy')}
+                                            </span>
+                                        </div>
+                                    ) : (
+                                        <span className="text-gray-500">No due date</span>
+                                    )}
+                                </TableCell>
+                                <TableCell>
+                                    <span className="text-sm text-gray-500">
+                                        {format(new Date(task.createdAt), 'MMM d, yyyy')}
+                                    </span>
+                                </TableCell>
+                                <TableCell>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="icon">
+                                                <MoreHorizontal className="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem>Edit Task</DropdownMenuItem>
+                                            <DropdownMenuItem 
+                                                className="text-red-600"
+                                                onClick={() => handleDeleteTask(task.id)}
+                                            >
+                                                Delete Task
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+                            </TableRow>
                         ))}
                     </TableBody>
                 </Table>
             </div>
+
+            <CreateTaskDialog
+                open={isCreateTaskOpen}
+                onClose={() => setIsCreateTaskOpen(false)}
+                onSubmit={handleCreateTask}
+            />
         </div>
     );
 };

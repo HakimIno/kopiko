@@ -24,7 +24,7 @@ export const Navbar = () => {
     }
 
     return (
-        <nav className="fixed top-0 z-50 w-full shadow-sm">
+        <nav className="fixed top-0 z-50 w-full shadow-sm font-anuphan">
             <div className="flex h-16 items-center px-4">
                 <MobileSidebar />
                 <div className="flex items-center gap-2 md:gap-4">
@@ -32,17 +32,18 @@ export const Navbar = () => {
                         "hidden md:flex items-center gap-2 transition-all duration-300",
                         isCollapsed ? "w-auto" : "w-56"
                     )}>
-                        <div className="p-1.5 bg-[#D69D78] rounded-s-2xl rounded-t-2xl border border-black">
-                            <Image src={"/logo.svg"} width={30} height={60} alt="logo" />
-                        </div>
-                        {!isCollapsed && (
-                            <span className="text-2xl font-semibold">
+                        {!isCollapsed ? (
+                            <span className="text-2xl font-semibold ml-2">
                                 Kopiko
+                            </span>
+                        ) : (
+                            <span className="text-2xl font-semibold ml-2">
+                                K
                             </span>
                         )}
                     </div>
                 </div>
-                
+
                 <div className="ml-auto flex items-center gap-2">
                     <ThemeToggle />
                     <DropdownMenu>

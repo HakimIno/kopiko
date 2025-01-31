@@ -27,6 +27,8 @@ model User {
   projectMemberships ProjectMember[]
   assignedTasks      Task[]                @relation("AssignedTasks")
   reportedTasks      Task[]                @relation("ReportedTasks")
+  reviewedTasks      Task[]                @relation("TaskReviewers")
+  dailyStandups      DailyStandup[]
   timeEntries        TimeEntry[]
   comments           Comment[]
   notifications      Notification[]
@@ -155,23 +157,85 @@ enum ProjectRole {
 }
 
 model Sprint {
-  id        String       @id @default(uuid())
-  name      String
-  projectId String
-  goal      String? // Sprint goal description
-  startDate DateTime
-  endDate   DateTime
-  status    SprintStatus @default(PLANNING)
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  id          String       @id @default(cuid())
+  name        String
+  projectId   String
+  goal        String?      @db.Text
+  startDate   DateTime
+  endDate     DateTime
+  status      SprintStatus @default(PLANNING)
+  position    Float        @default(0)
+  storyPoints Int         @default(0)    // Total Story Points in Sprint
+  velocity    Float?                     // Team velocity
+  burndownData Json?                     // Burndown Chart data
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  deletedAt   DateTime?
 
   // Relations
-  project Project @relation(fields: [projectId], references: [id])
-  tasks   Task[]
+  project     Project      @relation(fields: [projectId], references: [id])
+  tasks       Task[]
+  retrospective SprintRetrospective?
+  dailyStandups DailyStandup[]
+  metrics      SprintMetrics?
 
   @@index([projectId])
   @@index([status])
   @@index([startDate, endDate])
+}
+
+model SprintRetrospective {
+  id            String    @id @default(cuid())
+  sprintId      String    @unique
+  whatWentWell  String[]  // What went well
+  whatWentWrong String[]  // What needs improvement
+  actionItems   String[]  // Action items for next sprint
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  sprint        Sprint    @relation(fields: [sprintId], references: [id])
+
+  @@index([sprintId])
+}
+
+model DailyStandup {
+  id          String    @id @default(cuid())
+  sprintId    String
+  userId      String
+  date        DateTime
+  yesterday   String    // What was done yesterday
+  today       String    // What will be done today
+  blockers    String?   // Any blockers
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  sprint      Sprint    @relation(fields: [sprintId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@unique([sprintId, userId, date])
+  @@index([sprintId])
+  @@index([userId])
+  @@index([date])
+}
+
+model SprintMetrics {
+  id                   String    @id @default(cuid())
+  sprintId             String    @unique
+  plannedStoryPoints   Int
+  completedStoryPoints Int
+  actualVelocity       Float
+  burndownData         Json      // Daily burndown chart data
+  startDate            DateTime
+  endDate              DateTime
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  // Relations
+  sprint               Sprint    @relation(fields: [sprintId], references: [id])
+
+  @@index([sprintId])
 }
 
 enum SprintStatus {
@@ -182,48 +246,59 @@ enum SprintStatus {
 }
 
 model Task {
-  id           String     @id @default(uuid())
-  title        String
-  description  String?    @db.Text // Using Text for longer content
-  projectId    String
-  sprintId     String?
-  status       TaskStatus @default(TODO)
-  priority     Priority   @default(MEDIUM)
-  assigneeId   String?
-  reporterId   String
-  taskNumber   Int // Sequential number within project
-  timeEstimate Int? // in minutes
-  timeSpent    Int? // in minutes
-  dueDate      DateTime?
-  isBlocked    Boolean    @default(false)
-  blockReason  String?
-  parentTaskId String? // For subtasks
-  position     Float // For task ordering in backlog/boards
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  deletedAt    DateTime? // Soft delete
+  id          String    @id @default(cuid())
+  taskNumber  Int
+  title       String
+  description String?   @db.Text
+  priority    Priority  @default(MEDIUM)
+  status      TaskStatus @default(TODO)
+  startDate   DateTime?
+  dueDate     DateTime?
+  storyPoints Int       @default(0)    // Story Points estimation
+  acceptanceCriteria String[]          // Definition of Done
+  reviewStatus ReviewStatus?           // Code Review status
+  reviewerId   String?                 // Reviewer ID
+  documentationUrl String?             // Link to documentation
+  timeEstimate Int?     // in minutes
+  timeSpent   Int?      // in minutes
+  position    Float     // for ordering in kanban/list views
+  isBlocked   Boolean   @default(false)
+  blockReason String?   @db.Text
 
   // Relations
-  project           Project            @relation(fields: [projectId], references: [id])
-  sprint            Sprint?            @relation(fields: [sprintId], references: [id])
-  assignee          User?              @relation("AssignedTasks", fields: [assigneeId], references: [id])
-  reporter          User               @relation("ReportedTasks", fields: [reporterId], references: [id])
-  parentTask        Task?              @relation("TaskHierarchy", fields: [parentTaskId], references: [id])
-  subtasks          Task[]             @relation("TaskHierarchy")
-  labels            Label[]
-  comments          Comment[]
-  timeEntries       TimeEntry[]
+  projectId   String
+  project     Project   @relation(fields: [projectId], references: [id])
+  sprintId    String?
+  sprint      Sprint?   @relation(fields: [sprintId], references: [id])
+  assigneeId  String?
+  assignee    User?     @relation("AssignedTasks", fields: [assigneeId], references: [id])
+  reporterId  String
+  reporter    User      @relation("ReportedTasks", fields: [reporterId], references: [id])
+  reviewer    User?     @relation("TaskReviewers", fields: [reviewerId], references: [id])
+  parentTaskId String?
+  parentTask  Task?     @relation("SubTasks", fields: [parentTaskId], references: [id])
+  subtasks    Task[]    @relation("SubTasks")
+  labels      Label[]
+  comments    Comment[]
+  timeEntries TimeEntry[]
   customFieldValues CustomFieldValue[]
-  dependencies      TaskDependency[]   @relation("DependingTasks")
-  dependents        TaskDependency[]   @relation("DependentTasks")
-  attachments       Attachment[]
+  dependencies TaskDependency[] @relation("TaskDependencies")
+  dependents  TaskDependency[] @relation("DependsOn")
+  attachments Attachment[]
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
 
   @@unique([projectId, taskNumber])
-  @@index([projectId])
   @@index([sprintId])
   @@index([assigneeId])
+  @@index([reporterId])
+  @@index([reviewerId])
+  @@index([parentTaskId])
   @@index([status])
   @@index([priority])
+  @@index([startDate])
   @@index([dueDate])
 }
 
@@ -234,8 +309,8 @@ model TaskDependency {
   type        DependencyType @default(BLOCKS)
 
   // Relations
-  task      Task @relation("DependingTasks", fields: [taskId], references: [id])
-  dependsOn Task @relation("DependentTasks", fields: [dependsOnId], references: [id])
+  task      Task @relation("TaskDependencies", fields: [taskId], references: [id])
+  dependsOn Task @relation("DependsOn", fields: [dependsOnId], references: [id])
 
   @@unique([taskId, dependsOnId])
   @@index([taskId])
@@ -448,4 +523,11 @@ enum InviteStatus {
   ACCEPTED
   REJECTED
   EXPIRED
+}
+
+enum ReviewStatus {
+  PENDING
+  IN_REVIEW
+  APPROVED
+  CHANGES_REQUESTED
 }

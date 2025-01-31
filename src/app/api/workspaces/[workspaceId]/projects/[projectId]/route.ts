@@ -7,7 +7,7 @@ import { z } from 'zod'
 type Variables = {
     user: {
         userId: string
-    }
+    },
 }
 
 const app = new Hono<{ Variables: Variables }>()
@@ -23,6 +23,80 @@ const projectSchema = z.object({
     backgroundColor: z.string().nullable().optional(),
     status: z.enum(["ACTIVE", "ARCHIVED", "COMPLETED", "ON_HOLD"]).optional(),
 })
+
+// GET - Fetch project by ID
+app.get('/api/workspaces/:workspaceId/projects/:projectId', authMiddleware, async (c) => {
+    try {
+        const { userId } = c.get('user');
+        const workspaceId = c.req.param('workspaceId');
+        const projectId = c.req.param('projectId');
+
+        // ตรวจสอบสิทธิ์ของผู้ใช้ในพื้นที่ทำงาน
+        const userWorkspace = await prisma.userWorkspace.findFirst({
+            where: {
+                userId,
+                workspaceId,
+                isActive: true,
+            },
+            select: {
+                role: true,
+                workspace: {
+                    select: {
+                        ownerId: true
+                    }
+                }
+            }
+        });
+
+        // ตรวจสอบว่าผู้ใช้เป็นสมาชิกของ workspace
+        if (!userWorkspace || userWorkspace?.role !== "MEMBER" && userWorkspace?.workspace.ownerId !== userId) {
+            return c.json({ error: 'Permission denied. User is not a member of this workspace.' }, 403);
+        }
+
+        // ดึงข้อมูล project
+        const project = await prisma.project.findFirst({
+            where: {
+                id: projectId,
+                workspaceId,
+                deletedAt: null,
+                OR: [
+                    // Project เป็น public
+                    { isPublic: true },
+                    // User เป็น owner ของ workspace
+                    { workspace: { ownerId: userId } },
+                    // User เป็นสมาชิกที่ active ของ workspace
+                    {
+                        workspace: {
+                            members: {
+                                some: {
+                                    userId,
+                                    isActive: true
+                                }
+                            }
+                        }
+                    }
+                ]
+            },
+            include: {
+                workspace: {
+                    select: {
+                        name: true,
+                        ownerId: true
+                    }
+                }
+            }
+        });
+
+        if (!project) {
+            return c.json({ error: 'Project not found' }, 404);
+        }
+
+        return c.json({ project });
+    } catch (error) {
+        console.error('[GET_PROJECT_ERROR]', error);
+        return c.json({ error: 'Internal server error' }, 500);
+    }
+});
 
 // PATCH - Update project
 app.patch('/api/workspaces/:workspaceId/projects/:projectId', authMiddleware, async (c) => {
@@ -188,3 +262,4 @@ app.delete('/api/workspaces/:workspaceId/projects/:projectId', authMiddleware, a
 
 export const PATCH = handle(app);
 export const DELETE = handle(app);
+export const GET = handle(app);
