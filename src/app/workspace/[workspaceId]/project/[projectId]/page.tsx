@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState } from 'react';
+import { use } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ProjectHeader from './components/ProjectHeader';
 import KanbanView from './components/TaskBoard/KanbanView';
@@ -8,6 +8,7 @@ import CalendarView from './components/TaskBoard/CalendarView';
 import SprintBoard from './components/SprintManagement/SprintBoard';
 import { useProject } from '@/hooks/use-project';
 import SprintSkeleton from './components/SprintManagement/SprintSkeleton';
+import { useBoardStore } from '@/store/use-board-store';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -21,7 +22,7 @@ interface ProjectPageProps {
 
 function ProjectPageContent({ params }: ProjectPageProps) {
     const resolvedParams = use<ProjectPageProps['params']>(params);
-    const [currentView, setCurrentView] = useState<'sprint' | 'kanban' | 'calendar'>('sprint');
+    const { currentView, setCurrentView } = useBoardStore();
 
     const { data, isLoading, error } = useProject(
         resolvedParams.workspaceId,
@@ -47,7 +48,7 @@ function ProjectPageContent({ params }: ProjectPageProps) {
                     currentView={currentView}
                     onViewChange={setCurrentView}
                 />
-                <div className="flex-1 min-h-0">
+                <div className="flex-1 min-h-0 h-screen">
                     <SprintSkeleton />
                 </div>
             </>
@@ -59,7 +60,7 @@ function ProjectPageContent({ params }: ProjectPageProps) {
     }
 
     return (
-        <>
+        <div className="h-screen ">
             <ProjectHeader
                 project={data?.project}
                 currentView={currentView}
@@ -74,7 +75,7 @@ function ProjectPageContent({ params }: ProjectPageProps) {
                     <CalendarView />
                 ) : null}
             </div>
-        </>
+        </div>
     );
 }
 

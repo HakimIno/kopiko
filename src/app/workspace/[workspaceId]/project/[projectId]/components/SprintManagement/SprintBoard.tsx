@@ -11,12 +11,10 @@ import { useSprints } from '@/hooks/use-sprints';
 import { useParams } from 'next/navigation';
 import { Task, Sprint, Priority, TaskStatus } from '@prisma/client';
 import { SprintDialog } from './SprintDialog';
-import SprintSkeleton from './SprintSkeleton';
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { CreateSprintDialog } from '../SprintDialog/CreateSprintDialog';
 
 interface TaskWithDetails extends Task {
     assignee?: {
@@ -260,7 +258,7 @@ const SprintSection: React.FC<{ sprint: SprintWithTasks, deleteSprint: (sprintId
                                 <div className="space-y-4">
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-3">
-                                            <h3 className="text-lg font-semibold">{sprint.name}</h3>
+                                            <h3 className="text-md font-semibold">{sprint.name}</h3>
                                             <Badge variant="secondary" className={getSprintStatusColor(sprint.status)}>
                                                 {sprint.status}
                                             </Badge>
@@ -432,7 +430,7 @@ const SprintBoard: React.FC = () => {
                         <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                         <h3 className="text-xl font-semibold mb-2">No Sprints Found</h3>
                         <p className="text-gray-500 mb-6">
-                            Get started by creating your first sprint to organize and track your team's work.
+                            Get started by creating your first sprint to organize and track your team work.
                         </p>
                         <Button onClick={() => setIsCreateSprintOpen(true)} size="default">
                             <Plus className="w-5 h-5 mr-2" />

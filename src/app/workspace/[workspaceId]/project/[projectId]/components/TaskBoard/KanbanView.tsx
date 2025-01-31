@@ -19,6 +19,7 @@ import { format } from 'date-fns';
 import { CreateTaskDialog } from '../TaskDialog/CreateTaskDialog';
 import { useSprints } from '@/hooks/use-sprints';
 import { CreateSprintDialog } from '../SprintDialog/CreateSprintDialog';
+import { useBoardStore } from '@/store/use-board-store';
 
 interface TaskWithDetails extends Task {
     assignee?: {
@@ -120,7 +121,7 @@ const KanbanColumn: React.FC<{
                 </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-3 overflow-x-auto">
                 {tasks.map((task) => (
                     <TaskCard 
                         key={task.id} 
@@ -251,7 +252,7 @@ const KanbanView = () => {
     const [createTaskStatus, setCreateTaskStatus] = useState<TaskStatus>('TODO');
     const [searchQuery, setSearchQuery] = useState('');
     const [priorityFilter, setPriorityFilter] = useState<Priority | 'ALL'>('ALL');
-    const [selectedSprintId, setSelectedSprintId] = useState<string | 'backlog'>('backlog');
+    const { selectedSprintId, setSelectedSprintId } = useBoardStore();
     
     const { tasks, isLoading: isLoadingTasks, createTask, updateTask, deleteTask } = useTasks(
         params.workspaceId as string,
@@ -410,7 +411,7 @@ const KanbanView = () => {
     }
 
     return (
-        <div className="p-6">
+        <div className="p-6 font-anuphan">
             {/* Filters and Search */}
             <div className="mb-6 flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -486,25 +487,6 @@ const KanbanView = () => {
                     </Button>
                 </div>
             </div>
-
-            {/* Sprint Info with proper types */}
-            {selectedSprintId !== 'backlog' && (
-                <div className="mb-6">
-                    {sprintsList?.filter((sprint: Sprint) => sprint.id === selectedSprintId).map(sprint => (
-                        <div key={sprint.id} className="bg-secondary/20 p-4 rounded-lg">
-                            <h2 className="text-xl font-semibold mb-2">{sprint.name}</h2>
-                            {sprint.goal && (
-                                <p className="text-muted-foreground mb-2">{sprint.goal}</p>
-                            )}
-                            <div className="flex gap-4 text-sm text-muted-foreground">
-                                <span>Start: {format(new Date(sprint.startDate), 'MMM d, yyyy')}</span>
-                                <span>End: {format(new Date(sprint.endDate), 'MMM d, yyyy')}</span>
-                                <span>Status: {sprint.status}</span>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
 
             {/* Kanban Board */}
             <div className="flex gap-6 overflow-x-auto pb-6">

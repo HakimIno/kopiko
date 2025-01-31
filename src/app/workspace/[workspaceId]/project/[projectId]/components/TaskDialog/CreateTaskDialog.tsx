@@ -137,7 +137,7 @@ export const CreateTaskDialog: React.FC<CreateTaskDialogProps> = ({
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[600px]">
+            <DialogContent className="sm:max-w-[600px] font-anuphan">
                 <DialogHeader>
                     <DialogTitle>{initialData ? 'Edit Task' : 'Create New Task'}</DialogTitle>
                     <DialogDescription>
@@ -152,7 +152,7 @@ export const CreateTaskDialog: React.FC<CreateTaskDialogProps> = ({
                     <div className="space-y-4">
                         {/* Title */}
                         <div className="space-y-2">
-                            <Label htmlFor="title">
+                            <Label htmlFor="title" className="flex items-center">
                                 Title <span className="text-red-500">*</span>
                             </Label>
                             <Input
