@@ -86,7 +86,7 @@ export const NavLinks = ({ isMobile }: NavLinksProps) => {
     }, [])
 
     return (
-        <div className="flex h-full flex-col shadow-lg">
+        <div className="flex h-full flex-col shadow-lg font-anuphan ">
             {!isMobile && (
                 <div className="px-2 py-3">
                     {/* Workspace Selector */}

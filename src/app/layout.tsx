@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Anuphan, Lato } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "sonner";
+import { Toaster } from "@/components/ui/sonner"
 import { ThemeProvider } from "@/components/theme-provider";
 import { QueryProvider } from "@/providers/query-provider";
 import Providers from "./providers";
