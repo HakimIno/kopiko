@@ -63,7 +63,7 @@ export const ChangePasswordCard = () => {
         <Card className="w-full h-full md:w-[487px] border-none shadow-none p-4">
             <CardHeader className="flex items-center justify-center text-center p-7">
                 <CardTitle className="text-2xl flex flex-col items-center gap-3">
-                    <div className="p-2 bg-[#D69D78] rounded-s-3xl rounded-t-2xl border border-black">
+                    <div className="p-2 bg-[#B07A57] rounded-s-3xl rounded-t-2xl border border-black">
                         <Image src={"/logo.svg"} width={70} height={70} alt="logo" />
                     </div>
                     Change Password

@@ -65,7 +65,7 @@ const WorkspaceClient = ({ workspaceId }: WorkspaceClientProps) => {
           description: projectData.description || "",
           status: projectData.status || "ACTIVE",
           isPublic: projectData.isPublic || false,
-          backgroundColor: projectData.backgroundColor || "#D69D78",
+          backgroundColor: projectData.backgroundColor || "#B07A57",
           icon: projectData.icon || null
         }),
       });
@@ -134,7 +134,7 @@ const WorkspaceClient = ({ workspaceId }: WorkspaceClientProps) => {
       description: "",
       status: "ACTIVE",
       isPublic: false,
-      backgroundColor: "#D69D78",
+      backgroundColor: "#B07A57",
       icon: null 
     });
   };

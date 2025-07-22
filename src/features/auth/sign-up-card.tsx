@@ -71,7 +71,7 @@ export const SignUpCard = () => {
         <Card className="w-full h-full md:w-[487px] border-none shadow-none p-4">
             <CardHeader className="flex items-center justify-center text-center p-7">
                 <CardTitle className="text-2xl flex flex-col items-center gap-3">
-                    {/* <div className="p-2 bg-[#D69D78] rounded-s-3xl rounded-t-2xl border border-black">
+                    {/* <div className="p-2 bg-[#B07A57] rounded-s-3xl rounded-t-2xl border border-black">
                         <Image src={"/logo.svg"} width={70} height={70} alt="logo" />
                     </div> */}
                     <Logo scale={0.9} />
@@ -80,7 +80,7 @@ export const SignUpCard = () => {
                 <CardDescription>
                     By signing up, you agree to our{" "}
                     <Link href={"/policy"}>
-                        <span className="text-[#D69D78]">Privacy Policy</span>
+                        <span className="text-[#B07A57]">Privacy Policy</span>
                     </Link>
                 </CardDescription>
             </CardHeader>
@@ -203,11 +203,11 @@ export const SignUpCard = () => {
                         href="/sign-in"
                         className="inline-flex items-center"
                     >
-                        <span className="text-[#D69D78] hover:text-[#B67E5C] font-medium">
+                        <span className="text-[#B07A57] hover:text-[#B67E5C] font-medium">
                             เข้าสู่ระบบ
                         </span>
                         <svg
-                            className="w-4 h-4 ml-1 text-[#D69D78]"
+                            className="w-4 h-4 ml-1 text-[#B07A57]"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"

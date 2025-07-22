@@ -29,7 +29,7 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project, onEdit, onDelete, isLoading }: ProjectCardProps) {
-    const mainColor = project.backgroundColor || '#D69D78';
+    const mainColor = project.backgroundColor || '#B07A57';
 
     return (
         <Link href={`/workspace/${project.workspaceId}/project/${project.id}`}>

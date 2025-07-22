@@ -115,7 +115,7 @@ export const NavLinks = ({ isMobile }: NavLinksProps) => {
                         <Select value={selectedWorkspace} onValueChange={setSelectedWorkspace}>
                             <SelectTrigger
                                 className={cn(
-                                    "border-none dark:bg-[#1a1a1a]/80 items-center flex dark:text-[#D69D78] ml-1 px-2",
+                                    "border-none dark:bg-[#1a1a1a]/80 items-center flex dark:text-[#B07A57] ml-1 px-2",
                                     isCollapsed ? "w-10 px-2" : "w-full"
                                 )}
                                 isIcon={!isCollapsed}
@@ -182,8 +182,8 @@ export const NavLinks = ({ isMobile }: NavLinksProps) => {
                             key={route.href}
                             href={route.href}
                             className={cn(
-                                "flex items-center gap-3  dark:bg-[#1a1a1a]/80 text-[#1a1a1a] dark:text-[#D69D78]  rounded-lg px-3 py-2.5 text-sm hover:bg-[#D69D78]/30 ",
-                                pathname === route.href ? "bg-[#D69D78]/30 font-medium" : "",
+                                "flex items-center gap-3  dark:bg-[#1a1a1a]/80 text-[#1a1a1a] dark:text-[#B07A57]  rounded-lg px-3 py-2.5 text-sm hover:bg-[#B07A57]/30 ",
+                                pathname === route.href ? "bg-[#B07A57]/30 font-medium" : "",
                                 !isMobile && isCollapsed ? "justify-center" : ""
                             )}
                         >

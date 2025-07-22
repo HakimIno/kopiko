@@ -93,7 +93,7 @@ export function WorkspaceContent({
                   variant={activeTab === tab.id ? "default" : "ghost"}
                   className={cn(
                     "flex items-center gap-2 transition-all",
-                    activeTab === tab.id && "bg-[#D69D78] text-white hover:bg-[#D69D78]/90"
+                    activeTab === tab.id && "bg-[#B07A57] text-white hover:bg-[#B07A57]/90"
                   )}
                   onClick={() => setActiveTab(tab.id)}
                 >
@@ -107,7 +107,7 @@ export function WorkspaceContent({
             <Button
               onClick={onCreateProject}
               disabled={isLoading.create}
-              className="bg-[#D69D78] hover:bg-[#D69D78]/90"
+              className="bg-[#B07A57] hover:bg-[#B07A57]/90"
             >
               <Plus className="w-4 h-4 mr-2" />
               New Project
@@ -180,7 +180,7 @@ function OverviewContent({
         <h3 className="text-lg font-semibold mb-4">Project Overview</h3>
         <div className="grid grid-cols-4 gap-4">
           {Object.entries(projectsByStatus).map(([status, count]) => (
-            <Card key={status} className="p-4 bg-[#D69D78]/5">
+            <Card key={status} className="p-4 bg-[#B07A57]/5">
               <h4 className="text-sm text-muted-foreground">{status}</h4>
               <p className="text-2xl font-semibold">{count}</p>
             </Card>
@@ -228,7 +228,7 @@ function ActivityFeed() {
       <div className="space-y-4">
         {[1, 2, 3].map((activity) => (
           <div key={activity} className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-full bg-[#D69D78]/10 flex items-center justify-center text-[#D69D78]">
+            <div className="w-8 h-8 rounded-full bg-[#B07A57]/10 flex items-center justify-center text-[#B07A57]">
               U
             </div>
             <div>

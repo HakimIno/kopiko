@@ -40,14 +40,14 @@ export function WorkspaceHeader({ workspace }: WorkspaceHeaderProps) {
               <Button 
                 variant="outline" 
                 size="icon"
-                className="p-4 bg-background rounded-full text-[#D69D78]"
+                className="p-4 bg-background rounded-full text-[#B07A57]"
                 onClick={() => router.back()}
               >
                 <ArrowLeft className="h-full w-full" />
               </Button>
             <div 
               className="p-2 rounded-xl flex items-center justify-center text-white font-bold"
-              style={{ backgroundColor: workspace.theme?.color || "#D69D78" }}
+              style={{ backgroundColor: workspace.theme?.color || "#B07A57" }}
             >
               <div
                 className={cn(
@@ -82,7 +82,7 @@ export function WorkspaceHeader({ workspace }: WorkspaceHeaderProps) {
               <Bell className="w-4 h-4" />
             </Button>
             <Button 
-              className="bg-[#D69D78] hover:bg-[#D69D78]/90"
+              className="bg-[#B07A57] hover:bg-[#B07A57]/90"
               onClick={() => setIsInviteDialogOpen(true)}
             >
               <UserPlus className="w-4 h-4 mr-2" />

@@ -26,7 +26,7 @@ interface EditProjectDialogProps {
 }
 
 // const PRESET_COLORS = [
-//   '#D69D78', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', 
+//   '#B07A57', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', 
 //   '#FFEEAD', '#D4A5A5', '#9B6B70', '#E9967A', '#4B4453'
 // ];
 
@@ -133,7 +133,7 @@ export function EditProjectDialog({
                     <DialogTitle className="flex items-center gap-2 text-xl">
                         <div
                             className="w-4 h-4 rounded"
-                            style={{ backgroundColor: formData.backgroundColor || '#D69D78' }}
+                            style={{ backgroundColor: formData.backgroundColor || '#B07A57' }}
                         />
                         Edit Project
                     </DialogTitle>
@@ -204,7 +204,7 @@ export function EditProjectDialog({
                             <Label>Theme Color</Label>
                             <div className="mt-2">
                                 <CustomColorPicker
-                                    color={formData.backgroundColor || '#D69D78'}
+                                    color={formData.backgroundColor || '#B07A57'}
                                     onChange={(color) => setFormData({ ...formData, backgroundColor: color })}
                                 />
                             </div>

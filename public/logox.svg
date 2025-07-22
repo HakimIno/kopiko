@@ -2,7 +2,7 @@
   <!-- Base shape - Space Helmet -->
   <circle cx="200" cy="200" r="150" 
           fill="none" 
-          stroke="#DA7857" 
+          stroke="#B07A57" 
           stroke-width="12"
           opacity="0.9"/>
 
@@ -22,30 +22,30 @@
            Q280 280 200 280
            Q120 280 120 220
            Q120 180 140 160"
-        fill="#DA7857"/>
+        fill="#B07A57"/>
 
   <!-- Eyes -->
   <circle cx="170" cy="190" r="12" fill="#FFFFFF"/>
   <circle cx="230" cy="190" r="12" fill="#FFFFFF"/>
-  <circle cx="170" cy="190" r="6" fill="#DA7857"/>
-  <circle cx="230" cy="190" r="6" fill="#DA7857"/>
+  <circle cx="170" cy="190" r="6" fill="#B07A57"/>
+  <circle cx="230" cy="190" r="6" fill="#B07A57"/>
 
   <!-- Nose -->
   <path d="M190 220
            Q200 220 210 220
            Q200 230 190 220"
-        fill="#DA7857"/>
+        fill="#B07A57"/>
 
   <!-- Helmet Details -->
   <path d="M100 200
            Q200 240 300 200"
         fill="none"
-        stroke="#DA7857"
+        stroke="#B07A57"
         stroke-width="4"
         opacity="0.3"/>
 
   <!-- Stars -->
-  <g fill="#DA7857" opacity="0.6">
+  <g fill="#B07A57" opacity="0.6">
     <circle cx="90" cy="150" r="4"/>
     <circle cx="310" cy="150" r="4"/>
     <circle cx="120" cy="300" r="4"/>
@@ -56,10 +56,10 @@
   <!-- Antenna -->
   <path d="M200 50
            L200 20"
-        stroke="#DA7857"
+        stroke="#B07A57"
         stroke-width="8"
         stroke-linecap="round"/>
-  <circle cx="200" cy="15" r="8" fill="#DA7857"/>
+  <circle cx="200" cy="15" r="8" fill="#B07A57"/>
 
   
 </svg>

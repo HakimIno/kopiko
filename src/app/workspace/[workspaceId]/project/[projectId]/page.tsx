@@ -37,7 +37,7 @@ function ProjectPageContent({ params }: ProjectPageProps) {
                         id: '',
                         name: 'Loading...',
                         icon: '',
-                        backgroundColor: '#D69D78',
+                        backgroundColor: '#B07A57',
                         workspace: {
                             //@ts-ignore
                             id: '',

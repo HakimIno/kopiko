@@ -134,7 +134,7 @@ export default function DashboardPage() {
               className={cn(
                 "px-3 py-2 rounded-md ",
                 viewMode === 'grid'
-                  ? "bg-[#D69D78] shadow-sm scale-105 translate-y-0 text-white"
+                  ? "bg-[#B07A57] shadow-sm scale-105 translate-y-0 text-white"
                   : " scale-100 translate-y-0"
               )}
               onClick={() => setViewMode('grid')}
@@ -153,7 +153,7 @@ export default function DashboardPage() {
               className={cn(
                 "px-3 py-2 rounded-md ",
                 viewMode === 'list'
-                  ? "bg-[#D69D78] shadow-sm scale-105 translate-y-0 text-white"
+                  ? "bg-[#B07A57] shadow-sm scale-105 translate-y-0 text-white"
                   : " scale-100 translate-y-0"
               )}
               onClick={() => setViewMode('list')}

@@ -96,7 +96,7 @@ const sendInvitationEmail = async (
         <table role="presentation" style="width: 600px; border-collapse: collapse; background-color: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
           <!-- Header -->
           <tr>
-            <td style="padding: 10px 10px; text-align: center; background-color: #D69D78; border-radius: 8px 8px 0 0;">
+            <td style="padding: 10px 10px; text-align: center; background-color: #B07A57; border-radius: 8px 8px 0 0;">
               <div style="display: flex; width: auto; align-items: center; justify-content: center; "">
                 <img src="https://i.postimg.cc/CxHWR1Dg/Screenshot-2568-01-16-at-16-02-52-removebg-preview-2.png" alt="Kopiko Logo" style="width: 80px; height: auto;">
                 <span style="font-size: 1.5rem; font-weight: 600;">
@@ -114,12 +114,12 @@ const sendInvitationEmail = async (
               </h1>
               
               <p style="margin: 0 0 20px; color: #4a5568; font-size: 16px; line-height: 24px; text-align: center;">
-                <span style="color: #D69D78; font-weight: 600;">${ownerName}</span> has invited you to join their workspace on Kopiko.
+                <span style="color: #B07A57; font-weight: 600;">${ownerName}</span> has invited you to join their workspace on Kopiko.
               </p>
               
               <div style="margin: 35px 0; text-align: center;">
                 <a href="${inviteUrl}" 
-                   style="display: inline-block; padding: 14px 32px; background-color: #D69D78; color: white; text-decoration: none; font-weight: 600; font-size: 16px; border-radius: 6px; transition: background-color 0.2s;">
+                   style="display: inline-block; padding: 14px 32px; background-color: #B07A57; color: white; text-decoration: none; font-weight: 600; font-size: 16px; border-radius: 6px; transition: background-color 0.2s;">
                   Accept Invitation
                 </a>
               </div>
@@ -142,7 +142,7 @@ const sendInvitationEmail = async (
           <tr>
             <td style="padding: 30px 50px; background-color: #f8fafc; border-radius: 0 0 8px 8px;">
               <p style="margin: 0; color: #64748b; font-size: 14px; text-align: center;">
-                Need help? Contact us at <a href="mailto:support@kopiko.com" style="color: #D69D78; text-decoration: none;">support@kopiko.com</a>
+                Need help? Contact us at <a href="mailto:support@kopiko.com" style="color: #B07A57; text-decoration: none;">support@kopiko.com</a>
               </p>
             </td>
           </tr>

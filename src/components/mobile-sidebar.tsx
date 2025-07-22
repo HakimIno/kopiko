@@ -16,7 +16,7 @@ export const MobileSidebar = () => {
       </SheetTrigger>
       <SheetContent side="left" className="w-72 p-0">
         <div className="flex items-center gap-2 p-4 border-b">
-          <div className="p-1.5 bg-[#D69D78] rounded-s-2xl rounded-t-2xl border border-black">
+          <div className="p-1.5 bg-[#B07A57] rounded-s-2xl rounded-t-2xl border border-black">
             <Image src={"/logo.svg"} width={30} height={60} alt="logo" />
           </div>
           <span className="text-2xl font-semibold">

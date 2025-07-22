@@ -102,7 +102,7 @@ export default function WorkspaceInviteClient({ token }: WorkspaceInviteClientPr
                     <div className={cn(
                         "hidden md:flex items-center gap-2 transition-all duration-300",
                     )}>
-                        <div className="p-1.5 bg-[#D69D78] rounded-s-2xl rounded-t-2xl border border-black">
+                        <div className="p-1.5 bg-[#B07A57] rounded-s-2xl rounded-t-2xl border border-black">
                             <Image src={"/logo.svg"} width={45} height={50} alt="logo" />
                         </div>
                         <span className="text-2xl font-semibold">
@@ -112,7 +112,7 @@ export default function WorkspaceInviteClient({ token }: WorkspaceInviteClientPr
                     <div className="text-center">
                         <h1 className="text-2xl font-bold mb-2">Workspace Invitation</h1>
                         <p className="text-muted-foreground">
-                            You have been invited to join <span className="font-medium underline decoration-[#D69D78] text-[#D69D78]">{workspace.name}</span> on Kopiko.
+                            You have been invited to join <span className="font-medium underline decoration-[#B07A57] text-[#B07A57]">{workspace.name}</span> on Kopiko.
                         </p>
                     </div>
                 </div>

@@ -16,9 +16,9 @@ interface StatCardProps {
 
 function StatCard({ icon, label, value }: StatCardProps) {
   return (
-    <Card className="p-4 border-[#D69D78]/10 hover:border-[#D69D78]/80">
+    <Card className="p-4 border-[#B07A57]/10 hover:border-[#B07A57]/80">
       <div className="flex items-center gap-4">
-        <div className="p-3 rounded-xl bg-[#D69D78]/10">
+        <div className="p-3 rounded-xl bg-[#B07A57]/10">
           {icon}
         </div>
         <div>
@@ -33,22 +33,22 @@ function StatCard({ icon, label, value }: StatCardProps) {
 export function WorkspaceStats({ workspace }: WorkspaceStatsProps) {
   const stats = [
     {
-      icon: <Users className="w-5 h-5 text-[#D69D78]" />,
+      icon: <Users className="w-5 h-5 text-[#B07A57]" />,
       label: "Team Members",
       value: workspace._count?.members || 0
     },
     {
-      icon: <FolderKanban className="w-5 h-5 text-[#D69D78]" />,
+      icon: <FolderKanban className="w-5 h-5 text-[#B07A57]" />,
       label: "Active Projects",
       value: workspace._count?.projects || 0
     },
     {
-      icon: <Calendar className="w-5 h-5 text-[#D69D78]" />,
+      icon: <Calendar className="w-5 h-5 text-[#B07A57]" />,
       label: "Tasks Due Today",
       value: 8
     },
     {
-      icon: <Bell className="w-5 h-5 text-[#D69D78]" />,
+      icon: <Bell className="w-5 h-5 text-[#B07A57]" />,
       label: "Notifications",
       value: 3
     }

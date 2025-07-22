@@ -28,14 +28,14 @@ export default function ProjectHeader({
                     <Button
                         variant="outline"
                         size="icon"
-                        className="p-4 bg-background rounded-full text-[#D69D78]"
+                        className="p-4 bg-background rounded-full text-[#B07A57]"
                         onClick={() => router.back()}
                     >
                         <ArrowLeft className="h-full w-full" />
                     </Button>
                     <div
                         className="text-white rounded-lg w-8 h-8 flex items-center justify-center"
-                        style={{ backgroundColor: project.backgroundColor ?? "#D69D78" }}
+                        style={{ backgroundColor: project.backgroundColor ?? "#B07A57" }}
                     >
                         {project.icon ? <Image
                             src={project.icon}
@@ -90,7 +90,7 @@ export default function ProjectHeader({
                     </div>
                 </div>
 
-                <Button size="sm" className="bg-[#D69D78] hover:bg-[#D69D78]/60">
+                <Button size="sm" className="bg-[#B07A57] hover:bg-[#B07A57]/60">
                     <Plus className="mr-2 h-4 w-4" />
                     New
                 </Button>
