@@ -34,7 +34,7 @@ export default function RootLayout({
       <head>
 
       </head>
-      <body className={`${lato.variable} ${anuphan.variable}`}>
+      <body className={`${lato.variable} ${anuphan.variable} font-anuphan`}>
         <Providers>
           <QueryProvider>
             <ThemeProvider

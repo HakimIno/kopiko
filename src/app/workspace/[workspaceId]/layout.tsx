@@ -13,7 +13,7 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
     const { isCollapsed } = useSidebar();
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen font-anuphan">
             <Navbar />
             <div className="flex h-[calc(100vh-4rem)] pt-16">
                 <aside className={cn(

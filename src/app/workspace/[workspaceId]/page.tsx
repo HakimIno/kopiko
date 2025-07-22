@@ -12,7 +12,7 @@ export default async function WorkspacePage({ params }: WorkspacePageProps) {
     const workspaceId = resolvedParams.workspaceId;
     
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div className="font-anuphan">Loading...</div>}>
             <WorkspaceClient workspaceId={workspaceId} />
         </Suspense>
     );
