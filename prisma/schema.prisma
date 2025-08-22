@@ -481,19 +481,21 @@ model AuditLog {
 
 model Notification {
   id        String   @id @default(uuid())
-  type      String // MENTION, ASSIGNMENT, etc.
+  type      String // MENTION, ASSIGNMENT, WORKSPACE_INVITE, etc.
   userId    String
   title     String
   content   String
-  read      Boolean  @default(false)
+  isRead    Boolean  @default(false)
+  data      Json? // Additional data like invitationId, action buttons, etc.
   createdAt DateTime @default(now())
 
   // Relations
   user User @relation(fields: [userId], references: [id])
 
   @@index([userId])
-  @@index([read])
+  @@index([isRead])
   @@index([createdAt])
+  @@index([type])
 }
 
 model WorkspaceInvitation {

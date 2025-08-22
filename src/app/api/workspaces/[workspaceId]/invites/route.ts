@@ -4,6 +4,7 @@ import { PrismaClient, WorkspaceRole } from '@prisma/client'
 import { authMiddleware } from '@/middleware/auth'
 import { z } from 'zod'
 import { Resend } from 'resend'
+import { sendNotificationToUser } from '@/app/api/notifications/sse/route'
 
 // Constants
 const INVITATION_EXPIRY_DAYS = 7
@@ -227,7 +228,35 @@ app.post('/api/workspaces/:workspaceId/invites', authMiddleware, async (c) => {
             await sendInvitationEmail(email, workspace.name, workspace.owner.name, inviteUrl)
 
             // Create invitation record
-            await createInvitation(email, role, token, workspaceId, userId)
+            const invitation = await createInvitation(email, role, token, workspaceId, userId)
+
+            // Find user by email to send notification
+            const invitedUser = await prisma.user.findUnique({
+                where: { email }
+            })
+
+            if (invitedUser) {
+                // Create notification for the invited user
+                const notification = await prisma.notification.create({
+                    data: {
+                        type: 'WORKSPACE_INVITE',
+                        userId: invitedUser.id,
+                        title: `You've been invited to join ${workspace.name}`,
+                        content: `${workspace.owner.name} has invited you to join their workspace as ${role.toLowerCase()}.`,
+                        data: {
+                            invitationId: invitation.id,
+                            workspaceId: workspace.id,
+                            workspaceName: workspace.name,
+                            inviterName: workspace.owner.name,
+                            role: role,
+                            actions: ['accept', 'reject']
+                        }
+                    }
+                })
+
+                // Send real-time notification via WebSocket
+                await sendNotificationToUser(invitedUser.id, notification)
+            }
 
             return c.json({ message: 'Invitation sent successfully' })
         } catch (emailError: any) {

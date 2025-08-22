@@ -36,8 +36,17 @@ export const authMiddleware = async (c: Context, next: Next) => {
       
       c.set('user', { userId: decoded.userId })
       await next()
-    } catch (verifyError) {
+    } catch (verifyError: any) {
       console.error('[AUTH_MIDDLEWARE] Token verification failed:', verifyError)
+      
+      // Check if token is expired
+      if (verifyError.name === 'TokenExpiredError') {
+        return c.json({ 
+          error: 'Token expired',
+          code: 'TOKEN_EXPIRED'
+        }, 401)
+      }
+      
       return c.json({ error: 'Invalid token' }, 401)
     }
   } catch (error) {

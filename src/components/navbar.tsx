@@ -8,11 +8,12 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { User } from "lucide-react"
+import { User, Bell } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { MobileSidebar } from "./mobile-sidebar"
 import { useSidebar } from "@/store/use-sidebar"
 import { cn } from "@/lib/utils"
+import { NotificationBell } from "./notification-bell"
 
 export const Navbar = () => {
     const router = useRouter()
@@ -46,6 +47,10 @@ export const Navbar = () => {
 
                 <div className="ml-auto flex items-center gap-2">
                     <ThemeToggle />
+                    
+                    {/* Notification Bell */}
+                    <NotificationBell />
+
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button

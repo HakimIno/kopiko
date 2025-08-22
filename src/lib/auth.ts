@@ -97,18 +97,40 @@ export const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
 
   // If token expired, try to refresh and retry the request
   if (response.status === 401) {
-    const tokens = await refreshTokens()
-    if (!tokens) {
-      throw new Error('Not authenticated')
-    }
+    try {
+      const errorData = await response.json()
+      
+      // Check if it's a token expired error
+      if (errorData.code === 'TOKEN_EXPIRED') {
+        const tokens = await refreshTokens()
+        if (!tokens) {
+          throw new Error('Not authenticated')
+        }
 
-    return fetch(url, {
-      ...options,
-      headers: {
-        ...options.headers,
-        'Authorization': `Bearer ${tokens.accessToken}`,
-      },
-    })
+        // Retry the request with new token
+        return fetch(url, {
+          ...options,
+          headers: {
+            ...options.headers,
+            'Authorization': `Bearer ${tokens.accessToken}`,
+          },
+        })
+      }
+    } catch (parseError) {
+      // If we can't parse the error response, try refreshing anyway
+      const tokens = await refreshTokens()
+      if (!tokens) {
+        throw new Error('Not authenticated')
+      }
+
+      return fetch(url, {
+        ...options,
+        headers: {
+          ...options.headers,
+          'Authorization': `Bearer ${tokens.accessToken}`,
+        },
+      })
+    }
   }
 
   return response
