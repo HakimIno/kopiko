@@ -159,7 +159,7 @@ export function WorkspaceCard({ workspace, viewMode = 'grid' }: WorkspaceCardPro
     return (
         <>
             <Card
-                className={`h-48 cursor-pointer relative overflow-hidden group border-none  bg-background`}>
+                className={`h-48 cursor-pointer relative overflow-hidden group border-none  bg-background `}>
                 <div className="p-6 h-full flex flex-col">
                     <div className="flex items-start gap-4">
                         <Link href={`/workspace/${workspace.id}`} className="flex-1">

@@ -21,7 +21,7 @@ interface ProjectPageProps {
 }
 
 function ProjectPageContent({ params }: ProjectPageProps) {
-    const resolvedParams = use<ProjectPageProps['params']>(params);
+    const resolvedParams = use<ProjectPageProps['params']>(params as any);
     const { currentView, setCurrentView } = useBoardStore();
 
     const { data, isLoading, error } = useProject(
